@@ -15,6 +15,11 @@ namespace App
     // e.g. AccelerometerSensor, GyroscopeSensor
     interface ISensor
     {
+        // TODO: is string an appropriate way to represent data?
+        // the problem is coming up with a type to handle all sensors
+        // e.g. accelerometer might want a tuple/triple, while gyroscope
+        // might have a special class, etc. we'll have to make our own class
+        // to uniform this across sensors.
         string getCurrentValue();
     }
 }
