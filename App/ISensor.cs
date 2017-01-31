@@ -13,7 +13,7 @@ using Android.Widget;
 namespace App
 {
     // e.g. AccelerometerSensor, GyroscopeSensor
-    interface ISensor
+    public interface ISensor
     {
         // TODO: is string an appropriate way to represent data?
         // the problem is coming up with a type to handle all sensors

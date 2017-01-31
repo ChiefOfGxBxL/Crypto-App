@@ -19,7 +19,7 @@ namespace App
     //
     // Essentially this will allow us to experiment with different sources of entropy.
     // By adhering to this interface, we can swap different sources easily.
-    interface IEntropySource
+    public interface IEntropySource
     {
         string generateNoiseBytesOfLength(int length);
     }
