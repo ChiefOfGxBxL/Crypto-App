@@ -13,7 +13,7 @@ using Android.Widget;
 namespace App
 {
     // e.g. AccelerometerSensor, GyroscopeSensor
-    interface Sensor
+    interface ISensor
     {
         string getCurrentValue();
     }

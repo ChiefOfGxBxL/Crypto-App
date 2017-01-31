@@ -21,7 +21,7 @@ namespace App.Resources.layout
         /// <param name="es">EntropySource to use for pad generation</param>
         /// <param name="length">Length of pad in bytes</param>
         /// <returns></returns>
-        public static string generatePad(EntropySource es, int length)
+        public static string generatePad(IEntropySource es, int length)
         {
             // TODO
             es.generateNoiseBytesOfLength(length);

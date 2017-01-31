@@ -13,21 +13,8 @@ using Android.Hardware;
 
 namespace App
 {
-    public class AccelerometerSensor : Sensor, ISensorEventListener
+    class GyroscopeSensor : ISensor, ISensorEventListener
     {
-        // private _sensorManager
-
-        public AccelerometerSensor()
-        {
-            // TODO: follow the tutorial below to listen to the accelerometer data
-            throw new NotImplementedException();
-        }
-
-        public string getCurrentValue()
-        {
-            throw new NotImplementedException();
-        }
-
         public IntPtr Handle
         {
             get
@@ -39,7 +26,12 @@ namespace App
         public void Dispose()
         {
             throw new NotImplementedException();
-        
+        }
+
+        public string getCurrentValue()
+        {
+            throw new NotImplementedException();
+        }
 
         public void OnAccuracyChanged(Android.Hardware.Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
         {
