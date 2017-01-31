@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entropy Sources\PureAccelerometerEntropy.cs" />
     <Compile Include="Sensors\AccelerometerSensor.cs" />
     <Compile Include="IEntropySource.cs" />
     <Compile Include="Sensors\GyroscopeSensor.cs" />

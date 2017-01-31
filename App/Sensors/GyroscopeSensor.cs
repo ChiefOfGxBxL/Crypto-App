@@ -28,10 +28,13 @@ namespace App
             throw new NotImplementedException();
         }
 
-        public string getCurrentValue()
+        public object getCurrentValue()
         {
             throw new NotImplementedException();
         }
+
+        public void startListener() { }
+        public void pauseListener() { }
 
         public void OnAccuracyChanged(Android.Hardware.Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
         {
