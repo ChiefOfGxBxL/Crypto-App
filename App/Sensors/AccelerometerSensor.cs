@@ -39,7 +39,7 @@ namespace App
         public void Dispose()
         {
             throw new NotImplementedException();
-        
+        }
 
         public void OnAccuracyChanged(Android.Hardware.Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
         {
