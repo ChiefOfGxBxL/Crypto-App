@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("App.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("App2.Resource", IsApplication=true)]
 
-namespace App
+namespace App2
 {
 	
 	
@@ -60,20 +60,17 @@ namespace App
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f050004
-			public const int button1 = 2131034116;
-			
-			// aapt resource value: 0x7f050000
-			public const int editText1 = 2131034112;
+			// aapt resource value: 0x7f050003
+			public const int button1 = 2131034115;
 			
 			// aapt resource value: 0x7f050001
-			public const int radioButton1 = 2131034113;
+			public const int editText1 = 2131034113;
 			
 			// aapt resource value: 0x7f050002
-			public const int radioButton2 = 2131034114;
+			public const int editText2 = 2131034114;
 			
-			// aapt resource value: 0x7f050003
-			public const int switch1 = 2131034115;
+			// aapt resource value: 0x7f050000
+			public const int textView1 = 2131034112;
 			
 			static Id()
 			{
