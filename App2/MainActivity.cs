@@ -10,26 +10,28 @@ namespace App2
     [Activity(Label = "App2", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainActivity : Activity, ISensorEventListener
     {
-        EditText _editText;
-        EditText _editText2;
+        
+        TextView _textView;
+        EditText _editText1;
         Button _getEntropyBtn;
         SensorManager _sensorManager;
         const SensorDelay delay = SensorDelay.Normal;
+        String data;
 
         private void initializeUIComponents()
         {
-            _editText = FindViewById<EditText>(Resource.Id.editText1);
-            _editText2 = FindViewById<EditText>(Resource.Id.editText2);
+            _textView = FindViewById<TextView>(Resource.Id.textView1);
+            _editText1 = FindViewById<EditText>(Resource.Id.editText1);
             _getEntropyBtn = FindViewById<Button>(Resource.Id.button1);
 
             _getEntropyBtn.Click += generateEntropyClickEvt;
 
-            _editText.Text = "HI!! :)";
+            _textView.Text = "HI!! :)";
         }
 
         private void generateEntropyClickEvt(object sender, EventArgs e)
         {
-            _editText2.Text = EntropyManager.GetBlockOfEntropyBytes();
+            _editText1.Text = EntropyManager.GetBlockOfEntropyBytes();
         }
 
         private void setupSensors()
@@ -40,8 +42,9 @@ namespace App2
             }
 
             _sensorManager.RegisterListener(this, _sensorManager.GetDefaultSensor(SensorType.Accelerometer), delay);
-            _sensorManager.RegisterListener(this, _sensorManager.GetDefaultSensor(SensorType.AmbientTemperature), delay);
-            _sensorManager.RegisterListener(this, _sensorManager.GetDefaultSensor(SensorType.Light), delay);
+            //_sensorManager.RegisterListener(this, _sensorManager.GetDefaultSensor(SensorType.AmbientTemperature), delay);
+            //_sensorManager.RegisterListener(this, _sensorManager.GetDefaultSensor(SensorType.Light), delay);
+            _sensorManager.RegisterListener(this, _sensorManager.GetDefaultSensor(SensorType.Gyroscope), delay);
         }
 
         protected override void OnCreate(Bundle bundle)
@@ -52,12 +55,14 @@ namespace App2
             initializeUIComponents();
             setupSensors();
 
-            _editText2.Text = EntropyManager.GetBlockOfEntropyBytes();
+            _editText1.Text = EntropyManager.GetBlockOfEntropyBytes();
+           
         }
 
         protected override void OnPause()
         {
             base.OnPause();
+            Console.WriteLine(data); //Writes data to console seperated by spaces
             _sensorManager.UnregisterListener(this); // unregisters all sensors
         }
 
@@ -68,7 +73,8 @@ namespace App2
 
         public void OnSensorChanged(SensorEvent e)
         {
-            _editText.Text = e.Sensor.Type + " " + e.Values[0] + " " + e.Values[1] + " " + e.Values[2]; // DEBUG ONLY
+            _textView.Text = e.Sensor.Type + " " + e.Values[0] + " " + e.Values[1] + " " + e.Values[2]; // DEBUG ONLY
+            data += e.Values[0] + " " + e.Values[1] + " " + e.Values[2] + " "; //Stores console output for later use
             EntropyManager.FeedData(e.Sensor.Type, e.Values);
         }
     }

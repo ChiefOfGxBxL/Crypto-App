@@ -34,6 +34,9 @@ namespace App2
                         sb.Append(values[2].ToString().Trim('.'));
                         break;
                     case SensorType.Gyroscope:
+                        sb.Append(values[0].ToString().Trim('.'));
+                        sb.Append(values[1].ToString().Trim('.'));
+                        sb.Append(values[2].ToString().Trim('.'));
                         break;
                 }
             }
