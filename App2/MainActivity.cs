@@ -4,7 +4,9 @@ using Android.OS;
 using Android.Hardware;
 using Android.Runtime;
 using System;
+using System.IO;
 using System.Text;
+using System.Collections.Generic;
 
 namespace App2
 {
@@ -17,7 +19,8 @@ namespace App2
         Button _getEntropyBtn;
         SensorManager _sensorManager;
         const SensorDelay delay = SensorDelay.Normal;
-        String data;
+        List<string> data = new List<string>();
+        List<string> fileName = new List<string>();
 
         private void initializeUIComponents()
         {
@@ -59,18 +62,17 @@ namespace App2
         /// <param name="writeData">data to write to file</param>
         private void writeToFile( String fileName, String writeData)
         {
-            //I use the java stuff because I couldn't declare a C# file for some reason
-            Java.IO.File file = new Java.IO.File(GetExternalFilesDir(null), fileName); 
-            try
+            string path = GetExternalFilesDir(null).ToString();
+            string file = Path.Combine(path, fileName);
+            using (var binWriter = new BinaryWriter(new FileStream(file, FileMode.Append)))
             {
-                Java.IO.FileOutputStream os = new Java.IO.FileOutputStream(file, true);
-                os.Write(Encoding.ASCII.GetBytes(writeData));
-                os.Close();
-                
-            }catch(Java.IO.IOException e)
-            {
-                Console.WriteLine("File IO Error: {0}", e.ToString());
+                binWriter.Write(writeData);
+                binWriter.Close();
             }
+        }
+        private void writeToBin( String fileName, String writeData)
+        {
+            writeToFile(fileName + ".bin", writeData);
         }
 
         protected override void OnCreate(Bundle bundle)
@@ -88,8 +90,19 @@ namespace App2
         protected override void OnPause()
         {
             base.OnPause();
-            writeToFile("sensor_data.txt", data); // write data to file
+
+            for (int i = 0; i < fileName.Count; i++)
+            {
+                writeToBin(fileName[i], data[i]); // write data to file
+                data[i] = ""; //clear data so when reopenned data is fresh
+            }
             _sensorManager.UnregisterListener(this); // unregisters all sensors
+        }
+
+        protected override void OnResume()
+        {
+            base.OnResume();
+            setupSensors(); //reset sensors on resume
         }
 
         public void OnAccuracyChanged(Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
@@ -100,7 +113,20 @@ namespace App2
         public void OnSensorChanged(SensorEvent e)
         {
             _textView.Text = e.Sensor.Type + " " + e.Values[0] + " " + e.Values[1] + " " + e.Values[2]; // DEBUG ONLY
-            data += e.Values[0] + "\n" + e.Values[1] + "\n" + e.Values[2] + "\n"; //Stores data for writing on close
+
+            if (fileName.Count == 0){ // initialize the file name and its data
+                fileName.Add(e.Sensor.Type.ToString());
+                data.Add(e.Values[0].ToString() + e.Values[1].ToString() + e.Values[2].ToString());
+            }
+            else{ //creates new file name if sensor hasn't been used, adds data to string that goes with sensor
+                int index = fileName.IndexOf(e.Sensor.Type.ToString());
+                if (index == -1){
+                    fileName.Add(e.Sensor.Type.ToString());
+                    data.Add(e.Values[0].ToString() + e.Values[1].ToString() + e.Values[2].ToString());
+                }else{
+                    data.Insert(index, data[index] + e.Values[0].ToString() + e.Values[1].ToString() + e.Values[2].ToString());
+                }
+            }
             EntropyManager.FeedData(e.Sensor.Type, e.Values);
         }
     }
