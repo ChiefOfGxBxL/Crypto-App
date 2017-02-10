@@ -19,7 +19,6 @@ namespace App2
         Button _getEntropyBtn;
         SensorManager _sensorManager;
         const SensorDelay delay = SensorDelay.Normal;
-        List<string> data = new List<string>();
         List<string> fileName = new List<string>();
 
         private void initializeUIComponents()
@@ -53,14 +52,14 @@ namespace App2
 
 
         /// <summary>
-        /// writes data to a file
+        /// writes floats to a binary file
         /// creates a file if not found appends otherwise 
         /// path is in Android/data/App2.App2/files folder
         /// actual path might be different
         /// </summary>
         /// <param name="fileName">file name to write to</param>
         /// <param name="writeData">data to write to file</param>
-        private void writeToFile( String fileName, String writeData)
+        private void writeToFloatBin( String fileName,  float writeData)
         {
             string path = GetExternalFilesDir(null).ToString();
             string file = Path.Combine(path, fileName);
@@ -69,10 +68,6 @@ namespace App2
                 binWriter.Write(writeData);
                 binWriter.Close();
             }
-        }
-        private void writeToBin( String fileName, String writeData)
-        {
-            writeToFile(fileName + ".bin", writeData);
         }
 
         protected override void OnCreate(Bundle bundle)
@@ -91,11 +86,6 @@ namespace App2
         {
             base.OnPause();
 
-            for (int i = 0; i < fileName.Count; i++)
-            {
-                writeToBin(fileName[i], data[i]); // write data to file
-                data[i] = ""; //clear data so when reopenned data is fresh
-            }
             _sensorManager.UnregisterListener(this); // unregisters all sensors
         }
 
@@ -114,19 +104,11 @@ namespace App2
         {
             _textView.Text = e.Sensor.Type + " " + e.Values[0] + " " + e.Values[1] + " " + e.Values[2]; // DEBUG ONLY
 
-            if (fileName.Count == 0){ // initialize the file name and its data
-                fileName.Add(e.Sensor.Type.ToString());
-                data.Add(e.Values[0].ToString() + e.Values[1].ToString() + e.Values[2].ToString());
-            }
-            else{ //creates new file name if sensor hasn't been used, adds data to string that goes with sensor
-                int index = fileName.IndexOf(e.Sensor.Type.ToString());
-                if (index == -1){
-                    fileName.Add(e.Sensor.Type.ToString());
-                    data.Add(e.Values[0].ToString() + e.Values[1].ToString() + e.Values[2].ToString());
-                }else{
-                    data.Insert(index, data[index] + e.Values[0].ToString() + e.Values[1].ToString() + e.Values[2].ToString());
-                }
-            }
+
+            //CONSTANTLY WRITES MAY WANT TO CHANGE THIS
+            for (int i = 0; i < e.Values.Count; i++)
+                writeToFloatBin(e.Sensor.Type.ToString() + ".bin", e.Values[i]);
+
             EntropyManager.FeedData(e.Sensor.Type, e.Values);
         }
     }
