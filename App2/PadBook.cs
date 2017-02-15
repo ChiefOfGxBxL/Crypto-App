@@ -2,14 +2,14 @@
 
 namespace App2
 {
-    public class Pad
+    public class Padbook
     {
         public string Path { get; private set; }
         public string Username { get; private set; }
 
         private StreamReader sr;
 
-        public Pad(string path, string username = "")
+        public Padbook(string path, string username = "")
         {
             Path = path;
             Username = username;

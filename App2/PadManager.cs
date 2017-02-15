@@ -42,7 +42,7 @@ namespace App2
             return path;
         }
 
-        public Pad GetPadForUsername(string username)
+        public Padbook GetPadForUsername(string username)
         {
             if (username.Length == 0) return null; // must specify username
 
@@ -52,7 +52,7 @@ namespace App2
 
             if(File.Exists(padFilePath))
             {
-                return new Pad(padFilePath, username);
+                return new Padbook(padFilePath, username);
             }
             else
             {
@@ -64,7 +64,7 @@ namespace App2
             }
         }
 
-        public Pad CreateNewPadForUsername(string username, string[] pads)
+        public Padbook CreateNewPadForUsername(string username, string[] pads)
         {
             // TODO: creates a new padbook for a username, initializing
             // the padbook with specified pads
