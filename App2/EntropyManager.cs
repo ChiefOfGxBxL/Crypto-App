@@ -20,7 +20,7 @@ namespace App2
         public const int BlocksToStore = 4; // At any time, keep up to 4*1024 = 4kb of random bytes stored in the SB
         private const int TotalBufferSize = BlockLength * BlocksToStore;
 
-        private static StringBuilder sb = new StringBuilder();
+        private static StringBuilder sb = new StringBuilder(TotalBufferSize);
 
         public static void FeedData(SensorType sensor, IList<float> values)
         {
