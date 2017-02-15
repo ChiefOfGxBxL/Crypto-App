@@ -53,6 +53,8 @@
   <ItemGroup>
     <Compile Include="EntropyManager.cs" />
     <Compile Include="MainActivity.cs" />
+    <Compile Include="Pad.cs" />
+    <Compile Include="PadManager.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
