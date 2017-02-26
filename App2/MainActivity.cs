@@ -37,7 +37,7 @@ namespace App2
             _editText1.Text = EntropyManager.GetBlockOfEntropyBytes();
         }
 
-        private void setupSensors()
+        private void registerSensors()
         {
             if(_sensorManager == null)
             {
@@ -76,7 +76,7 @@ namespace App2
             SetContentView(Resource.Layout.Main);
 
             initializeUIComponents();
-            setupSensors();
+            registerSensors();
 
             _editText1.Text = EntropyManager.GetBlockOfEntropyBytes();
            
@@ -92,7 +92,7 @@ namespace App2
         protected override void OnResume()
         {
             base.OnResume();
-            setupSensors(); //reset sensors on resume
+            registerSensors(); //reset sensors on resume
         }
 
         public void OnAccuracyChanged(Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
