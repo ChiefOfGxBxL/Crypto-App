@@ -45,8 +45,6 @@ namespace App2
             }
 
             _sensorManager.RegisterListener(this, _sensorManager.GetDefaultSensor(SensorType.Accelerometer), delay);
-            //_sensorManager.RegisterListener(this, _sensorManager.GetDefaultSensor(SensorType.AmbientTemperature), delay);
-            //_sensorManager.RegisterListener(this, _sensorManager.GetDefaultSensor(SensorType.Light), delay);
             _sensorManager.RegisterListener(this, _sensorManager.GetDefaultSensor(SensorType.Gyroscope), delay);
         }
 
