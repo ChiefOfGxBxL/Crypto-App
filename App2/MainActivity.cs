@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using Android.Content;
 
 namespace App2
 {
@@ -17,6 +18,7 @@ namespace App2
         TextView _textView;
         EditText _editText1;
         Button _getEntropyBtn;
+        Button _btn2;
         SensorManager _sensorManager;
         const SensorDelay delay = SensorDelay.Normal;
         List<string> fileName = new List<string>();
@@ -26,10 +28,16 @@ namespace App2
             _textView = FindViewById<TextView>(Resource.Id.textView1);
             _editText1 = FindViewById<EditText>(Resource.Id.editText1);
             _getEntropyBtn = FindViewById<Button>(Resource.Id.button1);
+            _btn2 = FindViewById<Button>(Resource.Id.button2);
 
             _getEntropyBtn.Click += generateEntropyClickEvt;
+            _btn2.Click += _btn2_Click;
+        }
 
-            _textView.Text = "HI!! :)";
+        private void _btn2_Click(object sender, EventArgs e)
+        {
+            var intent = new Intent(this, typeof(ContactsListActivity));
+            StartActivity(intent);
         }
 
         private void generateEntropyClickEvt(object sender, EventArgs e)
@@ -77,7 +85,6 @@ namespace App2
             registerSensors();
 
             _editText1.Text = EntropyManager.GetBlockOfEntropyBytes();
-           
         }
 
         protected override void OnPause()
