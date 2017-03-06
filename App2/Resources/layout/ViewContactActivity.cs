@@ -12,7 +12,7 @@ using Android.Widget;
 
 namespace App2.Resources.layout
 {
-    [Activity(Label = "ViewContactActivity")]
+    [Activity(Label = "View Contact")]
     public class ViewContactActivity : Activity
     {
         Button getMessagesBtn;

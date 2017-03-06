@@ -11,7 +11,7 @@ using Android.Content;
 
 namespace App2
 {
-    [Activity(Label = "App2", MainLauncher = true, Icon = "@drawable/icon")]
+    [Activity(Label = "Crypto App", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainActivity : Activity, ISensorEventListener
     {
         
