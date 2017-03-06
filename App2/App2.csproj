@@ -57,7 +57,7 @@
     <Compile Include="MainActivity.cs" />
     <Compile Include="Padbook.cs" />
     <Compile Include="PadManager.cs" />
-    <Compile Include="Resources\layout\ViewContactActivity.cs" />
+    <Compile Include="ViewContactActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
