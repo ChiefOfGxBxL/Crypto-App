@@ -55,6 +55,7 @@
     <Compile Include="ContactsListActivity.cs" />
     <Compile Include="EntropyManager.cs" />
     <Compile Include="MainActivity.cs" />
+    <Compile Include="NfcActivity.cs" />
     <Compile Include="Padbook.cs" />
     <Compile Include="PadManager.cs" />
     <Compile Include="ViewContactActivity.cs" />
@@ -84,7 +85,15 @@
     <AndroidResource Include="Resources\drawable\Icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\AndroidManifest.xml" />
+    <None Include="Properties\AndroidManifest.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\Nfc.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

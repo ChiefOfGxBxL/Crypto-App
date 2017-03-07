@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="App2.App2" android:versionCode="1" android:versionName="1.0">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="App2.App2" android:versionCode="1" android:versionName="1.0" android:installLocation="auto">
 	<uses-sdk android:minSdkVersion="16" />
+	<uses-permission android:name="android.permission.NFC" android:required="true" />
 	<application android:label="App2"></application>
+	<preference name="AndroidLaunchMode" value="SingleTop"></preference>
 </manifest>
