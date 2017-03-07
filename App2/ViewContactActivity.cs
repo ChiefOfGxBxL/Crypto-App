@@ -10,7 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace App2.Resources.layout
+namespace App2
 {
     [Activity(Label = "View Contact")]
     public class ViewContactActivity : Activity
@@ -26,6 +26,9 @@ namespace App2.Resources.layout
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.ViewContact);
 
+            // Get passed information
+            var contactName = Intent.GetStringExtra("contact");
+
             // Set the global UI variables here
             getMessagesBtn = FindViewById<Button>(Resource.Id.button1);
             generateEntropyBtn = FindViewById<Button>(Resource.Id.button2);
@@ -33,7 +36,7 @@ namespace App2.Resources.layout
             sendMessageText = FindViewById<EditText>(Resource.Id.editText1);
             sendMessageBtn = FindViewById<Button>(Resource.Id.button3);
 
-
+            this.Window.SetTitle(contactName);
         }
     }
 }

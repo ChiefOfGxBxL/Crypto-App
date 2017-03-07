@@ -14,7 +14,7 @@ using System.IO;
 namespace App2
 {
     [Activity(Label = "Contacts")]
-    public class ContactsListActivity : ListActivity
+    public class ContactsListActivity : Activity
     {
         ListView _listView;
         List<string> items;
@@ -34,16 +34,19 @@ namespace App2
 
             ArrayAdapter adapter = new ArrayAdapter(this, Android.Resource.Layout.SimpleListItem1, items);
             _listView.Adapter = adapter;
+            _listView.ItemClick += contactListViewItemClick;
 
             // Any additional contacts should go through the adapter
         }
 
-        protected override void OnListItemClick(ListView l, View v, int position, long id)
+        private void contactListViewItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
-            var t = items[position];
+            //var t = items[e.Position];
 
             // View this contact by creating a new intent and starting the activity
-
+            var contactIntent = new Intent(this, typeof(ViewContactActivity));
+            contactIntent.PutExtra("contact", "TODO:CONTACT_NAME"); // pass along the name of the contact
+            StartActivity(contactIntent);
         }
     }
 }
