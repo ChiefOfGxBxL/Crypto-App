@@ -16,7 +16,9 @@ using System.IO;
 namespace App2
 {
     [Activity(Label = "Nfc", LaunchMode = Android.Content.PM.LaunchMode.SingleTop),
-     IntentFilter(new[] { "android.nfc.action.NDEF_DISCOVERED" })]
+     IntentFilter(new[] { "android.nfc.action.NDEF_DISCOVERED" },
+        Categories =new[] { "android.intent.category.DEFAULT" },
+        DataMimeType ="padbook/nfc" )]
 
     public class NfcActivity : Activity, NfcAdapter.ICreateNdefMessageCallback, NfcAdapter.IOnNdefPushCompleteCallback
     {
@@ -74,6 +76,7 @@ namespace App2
             }
             else
             {
+
                 _writeBtn.Click += _writeBtn_Click;
                 _text.Text = "No message";
             }
@@ -84,6 +87,7 @@ namespace App2
         {
             _nfcAdapter.SetNdefPushMessageCallback(this, this);
             _nfcAdapter.SetOnNdefPushCompleteCallback(this, this);
+            
         }
 
         protected override void OnResume()

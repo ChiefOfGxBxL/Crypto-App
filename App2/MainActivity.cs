@@ -63,7 +63,7 @@ namespace App2
         /// <param name="writeData">data to write to file</param>
         private void writeToFloatBin( String fileName,  float writeData)
         {
-            string path = GetExternalFilesDir(null).ToString();
+            string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
             string file = Path.Combine(path, fileName);
             using (var binWriter = new BinaryWriter(new FileStream(file, FileMode.Append)))
             {
