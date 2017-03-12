@@ -74,11 +74,16 @@ namespace App2
             }
             else
             {
-                _nfcAdapter.SetNdefPushMessageCallback(this, this);
-                _nfcAdapter.SetOnNdefPushCompleteCallback(this, this);
+                _writeBtn.Click += _writeBtn_Click;
                 _text.Text = "No message";
             }
 
+        }
+
+        private void _writeBtn_Click(object sender, EventArgs e)
+        {
+            _nfcAdapter.SetNdefPushMessageCallback(this, this);
+            _nfcAdapter.SetOnNdefPushCompleteCallback(this, this);
         }
 
         protected override void OnResume()
