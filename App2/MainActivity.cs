@@ -15,9 +15,6 @@ namespace App2
     public class MainActivity : Activity, ISensorEventListener
     {
         
-        TextView _textView;
-        EditText _editText1;
-        Button _getEntropyBtn;
         Button _btn2;
         Button _nfcStartBtn;
         SensorManager _sensorManager;
@@ -26,12 +23,8 @@ namespace App2
 
         private void initializeUIComponents()
         {
-            _textView = FindViewById<TextView>(Resource.Id.textView1);
-            _editText1 = FindViewById<EditText>(Resource.Id.editText1);
-            _getEntropyBtn = FindViewById<Button>(Resource.Id.button1);
             _btn2 = FindViewById<Button>(Resource.Id.button2);
             _nfcStartBtn = FindViewById<Button>(Resource.Id.nfcButton);
-            _getEntropyBtn.Click += generateEntropyClickEvt;
             _btn2.Click += _btn2_Click;
             _nfcStartBtn.Click += _nfcStart;
         }
@@ -40,11 +33,6 @@ namespace App2
         {
             var intent = new Intent(this, typeof(ContactsListActivity));
             StartActivity(intent);
-        }
-
-        private void generateEntropyClickEvt(object sender, EventArgs e)
-        {
-            _editText1.Text = EntropyManager.GetBlockOfEntropyBytes();
         }
 
         private void _nfcStart(object sender, EventArgs e)
@@ -91,8 +79,6 @@ namespace App2
 
             initializeUIComponents();
             registerSensors();
-
-            _editText1.Text = EntropyManager.GetBlockOfEntropyBytes();
         }
 
         protected override void OnPause()
@@ -115,9 +101,6 @@ namespace App2
 
         public void OnSensorChanged(SensorEvent e)
         {
-            _textView.Text = e.Sensor.Type + " " + e.Values[0] + " " + e.Values[1] + " " + e.Values[2]; // DEBUG ONLY
-
-
             //CONSTANTLY WRITES MAY WANT TO CHANGE THIS
             for (int i = 0; i < e.Values.Count; i++)
                 writeToFloatBin(e.Sensor.Type.ToString() + ".bin", e.Values[i]);
