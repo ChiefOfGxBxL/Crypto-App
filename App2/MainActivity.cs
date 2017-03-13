@@ -18,6 +18,8 @@ namespace App2
         
         Button _btn2;
         Button _nfcStartBtn;
+        EditText _setNameText;
+        Button _setNameBtn;
         SensorManager _sensorManager;
         const SensorDelay delay = SensorDelay.Normal;
         List<string> fileName = new List<string>();
@@ -26,8 +28,26 @@ namespace App2
         {
             _btn2 = FindViewById<Button>(Resource.Id.button2);
             _nfcStartBtn = FindViewById<Button>(Resource.Id.nfcButton);
+            _setNameText = FindViewById<EditText>(Resource.Id.editText1);
+            _setNameBtn = FindViewById<Button>(Resource.Id.button3);
+
             _btn2.Click += _btn2_Click;
             _nfcStartBtn.Click += _nfcStart;
+            _setNameBtn.Click += _setNameBtn_Click;
+        }
+
+        private void _setNameBtn_Click(object sender, EventArgs e)
+        {
+            // Write name to me.txt
+            string metxtFileLoc = Path.Combine(GetExternalFilesDir(null).ToString(), "me.txt");
+
+            // Create and use StreamWriter to output the text to the file
+            StreamWriter sw = new StreamWriter(metxtFileLoc, false);
+            sw.Write(_setNameText.Text);
+            sw.Close();
+
+            // Notify user of success
+            Toast.MakeText(this.ApplicationContext, "Set username!", ToastLength.Long).Show();
         }
 
         private void _btn2_Click(object sender, EventArgs e)
@@ -51,6 +71,19 @@ namespace App2
 
             _sensorManager.RegisterListener(this, _sensorManager.GetDefaultSensor(SensorType.Accelerometer), delay);
             _sensorManager.RegisterListener(this, _sensorManager.GetDefaultSensor(SensorType.Gyroscope), delay);
+        }
+
+        private string loadUsername()
+        {
+            string metxtFileLoc = Path.Combine(GetExternalFilesDir(null).ToString(), "me.txt");
+
+            if (!File.Exists(metxtFileLoc)) return "";
+
+            StreamReader sr = new StreamReader(metxtFileLoc);
+            string username = sr.ReadToEnd();
+            sr.Close();
+
+            return username;
         }
 
 
@@ -80,6 +113,9 @@ namespace App2
 
             initializeUIComponents();
             registerSensors();
+
+            // Set username textbox
+            _setNameText.Text = loadUsername();
         }
 
         protected override void OnPause()
