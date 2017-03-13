@@ -54,6 +54,7 @@
     <Compile Include="ContactBook.cs" />
     <Compile Include="ContactsListActivity.cs" />
     <Compile Include="EntropyManager.cs" />
+    <Compile Include="Identity.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="NfcActivity.cs" />
     <Compile Include="Padbook.cs" />

@@ -38,13 +38,7 @@ namespace App2
 
         private void _setNameBtn_Click(object sender, EventArgs e)
         {
-            // Write name to me.txt
-            string metxtFileLoc = Path.Combine(GetExternalFilesDir(null).ToString(), "me.txt");
-
-            // Create and use StreamWriter to output the text to the file
-            StreamWriter sw = new StreamWriter(metxtFileLoc, false);
-            sw.Write(_setNameText.Text);
-            sw.Close();
+            Identity.SetUsername(GetExternalFilesDir(null).ToString(), _setNameText.Text);
 
             // Notify user of success
             Toast.MakeText(this.ApplicationContext, "Set username!", ToastLength.Long).Show();
@@ -73,20 +67,6 @@ namespace App2
             _sensorManager.RegisterListener(this, _sensorManager.GetDefaultSensor(SensorType.Gyroscope), delay);
         }
 
-        private string loadUsername()
-        {
-            string metxtFileLoc = Path.Combine(GetExternalFilesDir(null).ToString(), "me.txt");
-
-            if (!File.Exists(metxtFileLoc)) return "";
-
-            StreamReader sr = new StreamReader(metxtFileLoc);
-            string username = sr.ReadToEnd();
-            sr.Close();
-
-            return username;
-        }
-
-
         /// <summary>
         /// writes floats to a binary file
         /// creates a file if not found appends otherwise 
@@ -113,9 +93,10 @@ namespace App2
 
             initializeUIComponents();
             registerSensors();
+            Identity.LoadUsername(GetExternalFilesDir(null).ToString());
 
             // Set username textbox
-            _setNameText.Text = loadUsername();
+            _setNameText.Text = Identity.Username;
         }
 
         protected override void OnPause()
