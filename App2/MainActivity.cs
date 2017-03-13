@@ -86,10 +86,11 @@ namespace App2
             }
         }
 
-        protected override void OnCreate(Bundle bundle)
+        protected async override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.Main);
+            await Task.Delay(10);
 
             initializeUIComponents();
             registerSensors();

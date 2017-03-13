@@ -10,6 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace App2
 {
@@ -17,26 +18,52 @@ namespace App2
     public class ContactsListActivity : Activity
     {
         ListView _listView;
-        List<string> items;
+        EditText _newContactTxt;
+        Button _newContactBtn;
 
-        protected override void OnCreate(Bundle savedInstanceState)
+        List<string> items;
+        ArrayAdapter adapter;
+
+        ContactBook cb;
+
+        protected async override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.ContactsList);
+            await Task.Delay(10);
 
             _listView = FindViewById<ListView>(Resource.Id.listView1);
+            _newContactTxt = FindViewById<EditText>(Resource.Id.editText1);
+            _newContactBtn = FindViewById<Button>(Resource.Id.button1);
+
+            _newContactBtn.Click += _newContactBtn_Click;
 
             // Create a new contact
-            ContactBook cb = new ContactBook(GetExternalFilesDir(null).ToString());
+            cb = new ContactBook(GetExternalFilesDir(null).ToString());
 
             // Create your application here
             items = cb.GetContacts();
 
-            ArrayAdapter adapter = new ArrayAdapter(this, Android.Resource.Layout.SimpleListItem1, items);
+            adapter = new ArrayAdapter(this, Android.Resource.Layout.SimpleListItem1, items);
             _listView.Adapter = adapter;
             _listView.ItemClick += contactListViewItemClick;
 
             // Any additional contacts should go through the adapter
+        }
+
+        private void _newContactBtn_Click(object sender, EventArgs e)
+        {
+            // Add to contacts list
+            cb.AddContact(_newContactTxt.Text);
+
+            items.Add(_newContactTxt.Text);
+            adapter.NotifyDataSetChanged(); // refresh the listview
+
+            // Clear textbox
+            _newContactTxt.Text = "";
+
+            // Notify user of success
+            Toast.MakeText(ApplicationContext, "Added new contact!", ToastLength.Long).Show();
         }
 
         private void contactListViewItemClick(object sender, AdapterView.ItemClickEventArgs e)
