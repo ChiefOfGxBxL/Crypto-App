@@ -37,6 +37,9 @@ namespace App2
 
         public static void SetUsername(string externalDir, string username)
         {
+            // Update this class' record of the username
+            Username = username;
+
             // Write name to me.txt
             string metxtFileLoc = Path.Combine(externalDir, "me.txt");
 
