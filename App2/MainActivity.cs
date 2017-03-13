@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using Android.Content;
+using System.Threading.Tasks;
 
 namespace App2
 {
@@ -88,9 +89,15 @@ namespace App2
             _sensorManager.UnregisterListener(this); // unregisters all sensors
         }
 
-        protected override void OnResume()
+        protected async override void OnResume()
         {
             base.OnResume();
+
+            // The await is magically needed for the app to work on my emulator
+            // Otherwise I get a System.NullReferenceException in OnResume or OnCreate
+            // See https://forums.xamarin.com/discussion/comment/219774/#Comment_219774
+            await Task.Delay(10);
+
             registerSensors(); //reset sensors on resume
         }
 
