@@ -102,7 +102,7 @@ namespace App2
             // Debug:
             Toast.MakeText(ApplicationContext, url, ToastLength.Long).Show();
 
-            string response = "";//wc.DownloadString(url); // message success will have an empty reponse body
+            string response = wc.DownloadString(url); // message success will have an empty reponse body
 
             if (response == null || response == "")
             {
