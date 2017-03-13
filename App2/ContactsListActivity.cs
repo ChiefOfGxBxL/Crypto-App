@@ -41,11 +41,9 @@ namespace App2
 
         private void contactListViewItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
-            //var t = items[e.Position];
-
             // View this contact by creating a new intent and starting the activity
             var contactIntent = new Intent(this, typeof(ViewContactActivity));
-            contactIntent.PutExtra("contact", "TODO:CONTACT_NAME"); // pass along the name of the contact
+            contactIntent.PutExtra("contact", items[e.Position].ToString()); // pass along the name of the contact
             StartActivity(contactIntent);
         }
     }
