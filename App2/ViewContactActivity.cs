@@ -52,7 +52,7 @@ namespace App2
         private void SendMessageBtn_Click(object sender, EventArgs e)
         {
             bool msgSent = SendMessage(sendMessageText.Text);
-            if(!msgSent)
+            if (!msgSent)
             {
                 Toast.MakeText(ApplicationContext, "Error sending message", ToastLength.Long).Show();
             }
@@ -71,6 +71,9 @@ namespace App2
             // endpoint: GET /messages/:to/:from; in this case, we want to find a message to me, from the user we are viewing
             string url = "http://safe-inlet-16663.herokuapp.com/messages/" + Identity.Username + "/" + contactName;
             string msg = wc.DownloadString(url);
+
+            // Debug:
+            Toast.MakeText(ApplicationContext, url, ToastLength.Long).Show();
 
             // TODO: decrypt message using corresponding pad
             var decryptedMsg = msg; // Decrypt here..
@@ -96,7 +99,10 @@ namespace App2
                 encryptedMsg // message to send along
             );
 
-            string response = wc.DownloadString(url); // message success will have an empty reponse body
+            // Debug:
+            Toast.MakeText(ApplicationContext, url, ToastLength.Long).Show();
+
+            string response = "";//wc.DownloadString(url); // message success will have an empty reponse body
 
             if (response == null || response == "")
             {
