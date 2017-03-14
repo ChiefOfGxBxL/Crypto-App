@@ -44,6 +44,7 @@ namespace App2
 
             getMessagesBtn.Click += GetMessagesBtn_Click;
             sendMessageBtn.Click += SendMessageBtn_Click;
+            generateEntropyBtn.Click += GenKeyBtn_Click;
 
             // Instantiate the WebClient we will be using to make requests to the API
             wc = new WebClient();
@@ -61,6 +62,13 @@ namespace App2
         private void GetMessagesBtn_Click(object sender, EventArgs e)
         {
             messageText.Text = RetrieveMessage();
+        }
+
+        private void GenKeyBtn_Click(object sender, EventArgs e)
+        {
+
+            var intent = new Intent(this, typeof(KeyGenActivity));
+            StartActivity(intent);
         }
 
         /// <summary>

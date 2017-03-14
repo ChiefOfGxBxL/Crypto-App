@@ -25,10 +25,12 @@ namespace App2
         const Int32 MESSAGE_SENT = 1;
         public NfcAdapter _nfcAdapter;
         private TextView _text;
-        private Button _writeBtn;
         private EditText _userInput;
         private const string Mime = "padbook/nfc";
         private readonly nfcHandler _Handler;
+        private Padbook pb;
+        private PadManager pm;
+        private string key;
 
         //needed for callbacks
         class nfcHandler : Handler
@@ -64,8 +66,8 @@ namespace App2
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.Nfc);
 
+            
             _userInput = FindViewById<EditText>(Resource.Id.editText1);
-            _writeBtn = FindViewById<Button>(Resource.Id.button1);
             _text = FindViewById<TextView>(Resource.Id.textView1);
 
             _nfcAdapter = NfcAdapter.GetDefaultAdapter(this);
@@ -76,18 +78,13 @@ namespace App2
             }
             else
             {
-
-                _writeBtn.Click += _writeBtn_Click;
-                _text.Text = "No message";
+                
+                key = EntropyManager.GetBlockOfEntropyBytes();
+                _nfcAdapter.SetNdefPushMessageCallback(this, this);
+                _nfcAdapter.SetOnNdefPushCompleteCallback(this, this);
+                _text.Text = "Move Your Phone Near Your Friend's";
             }
 
-        }
-
-        private void _writeBtn_Click(object sender, EventArgs e)
-        {
-            _nfcAdapter.SetNdefPushMessageCallback(this, this);
-            _nfcAdapter.SetOnNdefPushCompleteCallback(this, this);
-            
         }
 
         protected override void OnResume()
@@ -108,15 +105,16 @@ namespace App2
         void ProcessIntent(Intent intent)
         {
             IParcelable[] rawMsg = intent.GetParcelableArrayExtra(NfcAdapter.ExtraNdefMessages);
-            NdefMessage msg = (NdefMessage)rawMsg[0];
-            _text.Text = Encoding.UTF8.GetString(msg.GetRecords()[0].GetPayload());
+            NdefMessage msg = (NdefMessage)rawMsg[0];            
+            _text.Text = (Encoding.UTF8.GetString(msg.GetRecords()[0].GetPayload()));
+            
         }
 
         public NdefMessage CreateNdefMessage(NfcEvent evt)
         {
             NdefRecord mimeRec = new NdefRecord(
                 NdefRecord.TnfMimeMedia, Encoding.UTF8.GetBytes(Mime),
-                new byte[0], Encoding.UTF8.GetBytes(_userInput.Text));
+                new byte[0], Encoding.UTF8.GetBytes(key));
 
             NdefMessage msg = new NdefMessage(new NdefRecord[] { mimeRec });
             return msg;
@@ -125,6 +123,7 @@ namespace App2
         public void OnNdefPushComplete(NfcEvent evt)
         {
             _Handler.ObtainMessage( MESSAGE_SENT ).SendToTarget();
+            
         }
 
 

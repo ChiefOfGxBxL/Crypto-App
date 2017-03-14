@@ -4,14 +4,15 @@ namespace App2
 {
     public class Padbook
     {
-        public string Path { get; private set; }
+        public string filePath { get; private set; }
         public string Username { get; private set; }
 
         private StreamReader sr;
+        private StreamWriter sw;
 
-        public Padbook(string path, string username = "")
+        public Padbook(string path, string username ="")
         {
-            Path = path;
+            filePath = path;
             Username = username;
 
             sr = new StreamReader(path);
@@ -39,9 +40,14 @@ namespace App2
 
         public void AppendPads(string[] pads)
         {
-            // TODO: appends more pads to this current padfile. This is 
-            // not a destructive action -- it does not overwrite the current
-            // pads that are currently in the file.
+            string padFileLoc = Path.Combine(filePath, Username, "pad.txt");
+            StreamWriter sw = new StreamWriter(new FileStream(padFileLoc, FileMode.Append));
+            for (int i =0; i < pads.Length; i++)
+            {
+                sw.Write(pads[i] + "\n");
+            }
+
+            sw.Close();
         }
 
         public void DestroyPad()

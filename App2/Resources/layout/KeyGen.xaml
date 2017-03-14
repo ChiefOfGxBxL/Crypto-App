@@ -5,21 +5,26 @@
     android:layout_height="match_parent"
     android:minWidth="25px"
     android:minHeight="25px">
-  <EditText
-    android:paddingTop="15dp"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:hint="Enter message"
-    android:id="@+id/editText1" />
-  <Button
-    android:text="Send Text"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/button1" />
-    <TextView
+  <TextView
     android:text="Text"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="15dp"
     android:id="@+id/textView1" />
+   <ProgressBar
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@android:style/Widget.ProgressBar.Horizontal"
+    android:id="@+id/progBar"/>
+    <Button
+    android:text="Start Listening"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/button2" />
+    <Button
+    android:text="Transfer Key"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/button1" />
+
 </LinearLayout>

@@ -42,6 +42,15 @@ namespace App2
             }
         }
 
+        public static int GetSbSize()
+        {
+            return sb.Length;
+        }
+        public static int GetTotalSbSize()
+        {
+            return TotalBufferSize;
+        }
+
         public static string GetBlockOfEntropyBytes()
         {
             if (sb.Length >= BlockLength)
