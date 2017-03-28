@@ -42,7 +42,7 @@ namespace App2
             return path;
         }
 
-        public Padbook GetPadForUsername(string username)
+        public Padbook GetPadbookForUsername(string username)
         {
             if (username.Length == 0) return null; // must specify username
 
@@ -50,7 +50,7 @@ namespace App2
             string userContactDir = Path.Combine(_contactsDir, username);
             string padFilePath = Path.Combine(userContactDir, "pad.txt");
 
-            if(File.Exists(padFilePath))
+            if (File.Exists(padFilePath))
             {
                 return new Padbook(padFilePath, username);
             }

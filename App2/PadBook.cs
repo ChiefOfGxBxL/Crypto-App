@@ -1,52 +1,77 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace App2
 {
     public class Padbook
     {
-        public string filePath { get; private set; }
+        public string padFilePath { get; private set; }
         public string Username { get; private set; }
 
         private StreamReader sr;
-        private StreamWriter sw;
 
-        public Padbook(string path, string username ="")
+        List<string> pads = new List<string>();
+
+        public Padbook(string path, string username)
         {
-            filePath = path;
+            padFilePath = Path.Combine(path, Username, "pad.txt");
             Username = username;
 
-            sr = new StreamReader(path);
+            // Read all pads into memory
+            sr = new StreamReader(padFilePath);
+            while (sr.Peek() > 0)
+            {
+                pads.Add(sr.ReadLine());
+            }
+
+            // Initialize the stream writer
+            OpenPadStreamWriter();
         }
 
         /// <summary>
         /// Retrieves the Nth pad in the pad file.
-        /// Note that n should start at 1 for the 1st pad.
+        /// Note that n should start at 0 for the 1st pad.
         /// </summary>
-        /// <param name="n">Index of pad to retrieve, starting at n=1 for 1st pad</param>
+        /// <param name="n">Index of pad to retrieve, starting at n=0 for 1st pad</param>
         /// <returns></returns>
         public string GetNthPad(int n)
         {
-            if (n == 0) return null; // must index starting at 1
-            
-            // eat up the lines until we get to the one we want
-            // TODO: verify there is not an off-by-one error here
-            for(int i = 0; i < n-1; i++)
-            {
-                sr.ReadLine();
-            }
+            return pads[n];
+        }
 
-            return sr.ReadLine();
+        public string GetNextPad()
+        {
+            if (pads.Count == 0) return "";
+
+            string nextPad = pads[0];
+            pads.RemoveAt(0); // delete the first pad from the list, since we can only use it once
+            SaveMemPadsToFile(); // save the pad file - we removed the next pad
+
+            return nextPad;
+        }
+
+        public StreamWriter OpenPadStreamWriter()
+        {
+            return new StreamWriter(new FileStream(padFilePath, FileMode.Append));
+        }
+
+        public void SaveMemPadsToFile()
+        {
+            var sw = OpenPadStreamWriter();
+            foreach (string s in pads)
+            {
+                sw.WriteLine(s);
+            }
+            sw.Close();
         }
 
         public void AppendPads(string[] pads)
         {
-            string padFileLoc = Path.Combine(filePath, Username, "pad.txt");
-            StreamWriter sw = new StreamWriter(new FileStream(padFileLoc, FileMode.Append));
-            for (int i =0; i < pads.Length; i++)
+            var sw = OpenPadStreamWriter();
+            for (int i = 0; i < pads.Length; i++)
             {
-                sw.Write(pads[i] + "\n");
+                sw.WriteLine(pads[i]);
             }
-
             sw.Close();
         }
 
