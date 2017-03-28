@@ -23,9 +23,6 @@ namespace App2
             {
                 pads.Add(sr.ReadLine());
             }
-
-            // Initialize the stream writer
-            OpenPadStreamWriter();
         }
 
         /// <summary>
