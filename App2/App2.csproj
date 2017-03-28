@@ -57,7 +57,6 @@
     <Compile Include="Identity.cs" />
     <Compile Include="KeyGenActivity.cs" />
     <Compile Include="MainActivity.cs" />
-    <Compile Include="NfcActivity.cs" />
     <Compile Include="Padbook.cs" />
     <Compile Include="PadManager.cs" />
     <Compile Include="ViewContactActivity.cs" />
