@@ -54,7 +54,7 @@ namespace App2
                 Directory.CreateDirectory(Path.Combine(ContactsDirectory, contact));
 
                 // Create an empty pad.txt file for this contact
-                var x = File.Create(Path.Combine(ContactsDirectory, contact, "pads.txt"));
+                var x = File.Create(Path.Combine(ContactsDirectory, contact, "pad.txt"));
                 x.Close();
             }
         }
