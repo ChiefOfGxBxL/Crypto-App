@@ -55,7 +55,7 @@ namespace App2
             return new StreamWriter(new FileStream(padFilePath, FileMode.Append));
         }
 
-        public void SaveMemPadsToFile()
+        private void SaveMemPadsToFile()
         {
             var sw = OpenPadStreamWriter();
             foreach (string s in pads)
