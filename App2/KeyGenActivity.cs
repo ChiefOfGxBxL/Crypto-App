@@ -33,12 +33,14 @@ namespace App2
         int oldStatus = 0;
         bool recording;
         string contactName; // which contact we are generating the pad for
+        string myName;
 
         const Int32 MESSAGE_SENT = 1;
         public NfcAdapter _nfcAdapter;
         private const string Mime = "padbook/nfc";
         private readonly nfcHandler _Handler;
         private string key;
+        private string[] keys;
         private PadManager pm;
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -70,6 +72,7 @@ namespace App2
                 text.Text = "Pad manager is null";
                 // Get the contact name passed in through the intent when ViewContactActivity launches this intent
             contactName = Intent.GetStringExtra("contactName"); // stored in key "contactName"
+            myName = Identity.Username;
             text.Text = contactName;
 
             Toast.MakeText(ApplicationContext, contactName, ToastLength.Long).Show();
@@ -91,7 +94,7 @@ namespace App2
         {
             text.Text = contactName;
             Padbook friendBook = pm.GetPadbookForUsername(contactName);
-            string[] keys = new string[] { EntropyManager.GetBlockOfEntropyBytes() };
+            keys = new string[] { EntropyManager.GetBlockOfEntropyBytes() };
             key = EntropyManager.GetBlockOfEntropyBytes();
             friendBook.AppendPads(keys);
             
@@ -135,9 +138,14 @@ namespace App2
         //NFC EVENTS
         public NdefMessage CreateNdefMessage(NfcEvent evt)
         {
+            string datagram = myName + ",";
+            foreach (string e in keys)
+            {
+                datagram += e + "#";
+            }
             NdefRecord mimeRec = new NdefRecord(
                 NdefRecord.TnfMimeMedia, Encoding.UTF8.GetBytes(Mime),
-                new byte[0], Encoding.UTF8.GetBytes("MY NAME" +  "," + key));
+                new byte[0], Encoding.UTF8.GetBytes(datagram));
 
             NdefMessage msg = new NdefMessage(new NdefRecord[] { mimeRec });
             return msg;
