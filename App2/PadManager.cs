@@ -52,7 +52,7 @@ namespace App2
 
             if (File.Exists(padFilePath))
             {
-                return new Padbook(padFilePath, username);
+                return new Padbook(_contactsDir, username);
             }
             else
             {

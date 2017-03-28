@@ -14,17 +14,17 @@ using System.Text;
 
 namespace App2
 {
-    [Activity(Label = "KeyGenActivity", LaunchMode = Android.Content.PM.LaunchMode.SingleTop),
+    [Activity(Label = "KeyGenActivity", 
+     LaunchMode = Android.Content.PM.LaunchMode.SingleTop),
      IntentFilter(new[] { "android.nfc.action.NDEF_DISCOVERED" },
-        Categories = new[] { "android.intent.category.DEFAULT" },
-        DataMimeType = "padbook/nfc")]
+     Categories = new[] { "android.intent.category.DEFAULT" },
+     DataMimeType = "padbook/nfc")]
 
     public class KeyGenActivity : Activity, ISensorEventListener, NfcAdapter.ICreateNdefMessageCallback, NfcAdapter.IOnNdefPushCompleteCallback
     {
 
         SensorManager _sensorManager;
         const SensorDelay delay = SensorDelay.Normal;
-        List<string> fileName = new List<string>();
         Android.Widget.ProgressBar progBar;
         TextView text;
         Button finishedGen;
@@ -39,6 +39,7 @@ namespace App2
         private const string Mime = "padbook/nfc";
         private readonly nfcHandler _Handler;
         private string key;
+        private PadManager pm;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -51,6 +52,9 @@ namespace App2
             finishedGen = FindViewById<Button>(Resource.Id.button1);
             startGen = FindViewById<Button>(Resource.Id.button2);
             SetProgressBarIndeterminate(false);
+
+            pm = new PadManager(GetExternalFilesDir(null).ToString());
+            
             progBar.Progress = 0;
             progBar.Max = 100;
             finishedGen.Enabled = false;
@@ -62,8 +66,11 @@ namespace App2
             {
                 text.Text = "NFC not available";
             }
-            // Get the contact name passed in through the intent when ViewContactActivity launches this intent
+            if (pm == null)
+                text.Text = "Pad manager is null";
+                // Get the contact name passed in through the intent when ViewContactActivity launches this intent
             contactName = Intent.GetStringExtra("contactName"); // stored in key "contactName"
+            text.Text = contactName;
 
             Toast.MakeText(ApplicationContext, contactName, ToastLength.Long).Show();
         }
@@ -80,6 +87,19 @@ namespace App2
             registerSensors();
         }
 
+        private void StartNfc_Click(object sender, EventArgs e)
+        {
+            text.Text = contactName;
+            Padbook friendBook = pm.GetPadbookForUsername(contactName);
+            string[] keys = new string[] { EntropyManager.GetBlockOfEntropyBytes() };
+            key = EntropyManager.GetBlockOfEntropyBytes();
+            friendBook.AppendPads(keys);
+            
+            _nfcAdapter.SetNdefPushMessageCallback(this, this);
+            _nfcAdapter.SetOnNdefPushCompleteCallback(this, this);
+            text.Text = "Move Your Phone Near Your Friend's";
+        }
+
         protected override void OnPause()
         {
             base.OnPause();
@@ -88,7 +108,6 @@ namespace App2
                 _sensorManager.UnregisterListener(this); // unregisters all sensors
         }
         
-
         protected override void OnResume()
         {
             base.OnResume();
@@ -100,6 +119,7 @@ namespace App2
                 ProcessIntent(Intent);
             }
         }
+        //NEW INTENT STUFF FOR NFC
         protected override void OnNewIntent(Intent intent)
         {
             Intent = intent;
@@ -112,11 +132,12 @@ namespace App2
             text.Text = (Encoding.UTF8.GetString(msg.GetRecords()[0].GetPayload()));
 
         }
+        //NFC EVENTS
         public NdefMessage CreateNdefMessage(NfcEvent evt)
         {
             NdefRecord mimeRec = new NdefRecord(
                 NdefRecord.TnfMimeMedia, Encoding.UTF8.GetBytes(Mime),
-                new byte[0], Encoding.UTF8.GetBytes(key));
+                new byte[0], Encoding.UTF8.GetBytes("MY NAME" +  "," + key));
 
             NdefMessage msg = new NdefMessage(new NdefRecord[] { mimeRec });
             return msg;
@@ -127,7 +148,7 @@ namespace App2
             _Handler.ObtainMessage(MESSAGE_SENT).SendToTarget();
 
         }
-        //NFC STUFF
+        //HANDLER FOR NFC ACTIVITY
         public KeyGenActivity()
         {
             _Handler = new nfcHandler(HandlerHandleMessage);
@@ -144,7 +165,6 @@ namespace App2
                 handleMessage(msg);
             }
         }
-
         protected void HandlerHandleMessage(Message msg)
         {
             switch (msg.What)
@@ -154,16 +174,9 @@ namespace App2
                     break;
             }
         }
-        private void StartNfc_Click(object sender, EventArgs e)
-        {
-            key = EntropyManager.GetBlockOfEntropyBytes();
-            _nfcAdapter.SetNdefPushMessageCallback(this, this);
-            _nfcAdapter.SetOnNdefPushCompleteCallback(this, this);
-            text.Text = "Move Your Phone Near Your Friend's";
+        
 
-        }
-
-        //LISTENER STUFF
+        //SENSOR LISTENER STUFF
         public void OnAccuracyChanged(Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
         {
             //SensorStatus.Unreliable
@@ -188,9 +201,6 @@ namespace App2
                 _sensorManager.UnregisterListener(this);
             }
         }
-
-
-
         private void registerSensors()
         {
             if (_sensorManager == null)
