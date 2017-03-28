@@ -26,6 +26,7 @@ namespace App2
         int progStatus = 0;
         int oldStatus = 0;
         bool recording;
+        string contactName; // which contact we are generating the pad for
         
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -44,6 +45,11 @@ namespace App2
             finishedGen.Enabled = false;
             startGen.Click += StartGen_Click;
             finishedGen.Click += _nfcStart;
+
+            // Get the contact name passed in through the intent when ViewContactActivity launches this intent
+            contactName = Intent.GetStringExtra("contactName"); // stored in key "contactName"
+
+            Toast.MakeText(ApplicationContext, contactName, ToastLength.Long).Show();
         }
 
         private void StartGen_Click(object sender, EventArgs e)

@@ -66,8 +66,8 @@ namespace App2
 
         private void GenKeyBtn_Click(object sender, EventArgs e)
         {
-
             var intent = new Intent(this, typeof(KeyGenActivity));
+            intent.PutExtra("contactName", contactName);
             StartActivity(intent);
         }
 
