@@ -14,7 +14,7 @@ namespace App2
 
         public Padbook(string path, string username)
         {
-            padFilePath = Path.Combine(path, Username, "pad.txt");
+            padFilePath = Path.Combine(path, username, "pad.txt");
             Username = username;
 
             pads = new List<string>();
@@ -25,6 +25,7 @@ namespace App2
             {
                 pads.Add(sr.ReadLine());
             }
+            sr.Close();
         }
 
         /// <summary>
@@ -66,12 +67,14 @@ namespace App2
 
         public void AppendPads(string[] pads)
         {
-            var sw = OpenPadStreamWriter();
-            for (int i = 0; i < pads.Length; i++)
+            using (var sw = OpenPadStreamWriter())
             {
-                sw.WriteLine(pads[i]);
+                for (int i = 0; i < pads.Length; i++)
+                {
+                    sw.WriteLine(pads[i]);
+                }
+                sw.Close();
             }
-            sw.Close();
         }
 
         public void DestroyPad()
