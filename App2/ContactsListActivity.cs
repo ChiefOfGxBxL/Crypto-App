@@ -54,7 +54,7 @@ namespace App2
         private void _newContactBtn_Click(object sender, EventArgs e)
         {
             // Add to contacts list
-            cb.AddContact(_newContactTxt.Text);
+            cb.AddContact(_newContactTxt.Text); // Add to contact book by creating directory and empty pad.txt file
 
             items.Add(_newContactTxt.Text);
             adapter.NotifyDataSetChanged(); // refresh the listview

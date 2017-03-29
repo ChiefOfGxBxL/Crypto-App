@@ -53,13 +53,10 @@ namespace App2
             if(!File.Exists(padFilePath))
             {
                 // Here the pad file does not exist for the given contact
-                // We could inform the user that something went wrong, and that they
-                // need to generate more pads for this contact
+                // We simply create an empty one; sending messages in ViewContactActivity
+                // handles cases when no pads are available in the file.
                 var x = File.Create(padFilePath);
                 x.Close();
-
-                //Console.WriteLine("Error: could not find pad.txt file for username " + username);
-                //return null;
             }
 
             return new Padbook(padFilePath);
