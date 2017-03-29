@@ -10,12 +10,14 @@ namespace App2
 
         private StreamReader sr;
 
-        List<string> pads = new List<string>();
+        List<string> pads;
 
         public Padbook(string path, string username)
         {
             padFilePath = Path.Combine(path, Username, "pad.txt");
             Username = username;
+
+            pads = new List<string>();
 
             // Read all pads into memory
             sr = new StreamReader(padFilePath);

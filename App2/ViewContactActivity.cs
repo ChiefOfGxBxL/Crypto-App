@@ -25,6 +25,8 @@ namespace App2
         string contactName; // stores which user we are currently viewing
         WebClient wc; // for accessing API endpoints (retrieving and sending messages)
 
+        PadManager pm;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -48,6 +50,9 @@ namespace App2
 
             // Instantiate the WebClient we will be using to make requests to the API
             wc = new WebClient();
+
+            // Initialize pad manager
+            pm = new PadManager(GetExternalFilesDir(null).ToString());
         }
 
         private void SendMessageBtn_Click(object sender, EventArgs e)
@@ -83,8 +88,19 @@ namespace App2
             // Debug:
             Toast.MakeText(ApplicationContext, url, ToastLength.Long).Show();
 
-            // TODO: decrypt message using corresponding pad
-            var decryptedMsg = msg; // Decrypt here..
+            // Decrypt message by using pad from padbook
+            // If no pad exists, returns empty string
+            Padbook pb = pm.GetPadbookForUsername(contactName);
+            string pad = pb?.GetNextPad();
+            string decryptedMsg = "";
+            if (pad != null && pad.Length > 0)
+            {
+                decryptedMsg = Encoding.UTF8.GetString(Crypto.XorStrings(msg, pad)); // Decrypt message using pad
+            }
+            else
+            {
+                Toast.MakeText(ApplicationContext, "No pad exists to decrypt this message", ToastLength.Long).Show();
+            }
 
             return decryptedMsg;
         }
@@ -98,7 +114,20 @@ namespace App2
         {
             if (msg == null || msg.Length == 0) return false; // must have a message to send
 
-            string encryptedMsg = msg; // TODO: encrypt the message here using the pad
+            // Encrypt message using pad
+            Padbook pb = pm.GetPadbookForUsername(contactName);
+            string pad = pb.GetNextPad();
+            string encryptedMsg = msg;
+            if (pad != null && pad.Length > 0)
+            {
+                encryptedMsg = Encoding.UTF8.GetString(Crypto.XorStrings(msg, pad));
+            }
+            else
+            {
+                // No pad exists to encrpyt message, so bail out
+                Toast.MakeText(ApplicationContext, "No pad exists to encrypt this message", ToastLength.Long).Show();
+                return false;
+            }
 
             string url = string.Format(
                 "http://safe-inlet-16663.herokuapp.com/messages/new?to={0}&from={1}&content={2}",
