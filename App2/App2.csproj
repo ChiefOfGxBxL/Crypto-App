@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="ContactBook.cs" />
     <Compile Include="ContactsListActivity.cs" />
+    <Compile Include="Crypto.cs" />
     <Compile Include="EntropyManager.cs" />
     <Compile Include="Identity.cs" />
     <Compile Include="KeyGenActivity.cs" />
