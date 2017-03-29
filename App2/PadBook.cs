@@ -6,27 +6,25 @@ namespace App2
     public class Padbook
     {
         public string padFilePath { get; private set; }
-        public string Username { get; private set; }
 
         private StreamReader sr;
 
         List<string> pads;
 
-        public Padbook(string path, string username)
+        public Padbook(string fullTxtPath)
         {
-            padFilePath = Path.Combine(path, username, "pad.txt");
-            Username = username;
-
             pads = new List<string>();
 
             // Read all pads into memory
-            sr = new StreamReader(padFilePath);
+            sr = new StreamReader(fullTxtPath);
             while (sr.Peek() > 0)
             {
                 pads.Add(sr.ReadLine());
             }
             sr.Close();
         }
+
+        public Padbook(string path, string username) : this(Path.Combine(path, username, "pad.txt")) { }
 
         /// <summary>
         /// Retrieves the Nth pad in the pad file.

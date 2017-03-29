@@ -15,8 +15,8 @@ namespace App2
 {
     public class PadManager
     {
-        private string _appDir;
-        private string _contactsDir;
+        public string _appDir;
+        public string _contactsDir;
 
         public PadManager(string path)
         {
@@ -50,18 +50,19 @@ namespace App2
             string userContactDir = Path.Combine(_contactsDir, username);
             string padFilePath = Path.Combine(userContactDir, "pad.txt");
 
-            if (File.Exists(padFilePath))
-            {
-                return new Padbook(_contactsDir, username);
-            }
-            else
+            if(!File.Exists(padFilePath))
             {
                 // Here the pad file does not exist for the given contact
                 // We could inform the user that something went wrong, and that they
                 // need to generate more pads for this contact
-                Console.WriteLine("Error: could not find pad.txt file for username " + username);
-                return null;
+                var x = File.Create(padFilePath);
+                x.Close();
+
+                //Console.WriteLine("Error: could not find pad.txt file for username " + username);
+                //return null;
             }
+
+            return new Padbook(padFilePath);
         }
 
         public Padbook CreateNewPadForUsername(string username, string[] pads)

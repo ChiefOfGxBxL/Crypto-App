@@ -35,7 +35,7 @@ namespace App2
             // Get passed information
             string[] splitName = Intent.GetStringExtra("contact").Split('/');
             contactName = splitName[splitName.Length - 1];
-            Toast.MakeText(ApplicationContext, contactName, ToastLength.Long).Show();
+            //Toast.MakeText(ApplicationContext, contactName, ToastLength.Long).Show();
 
             // Set the global UI variables here
             getMessagesBtn = FindViewById<Button>(Resource.Id.button1);
@@ -53,6 +53,7 @@ namespace App2
 
             // Initialize pad manager
             pm = new PadManager(GetExternalFilesDir(null).ToString());
+            Toast.MakeText(ApplicationContext, pm._contactsDir, ToastLength.Long).Show();
         }
 
         private void SendMessageBtn_Click(object sender, EventArgs e)
@@ -86,12 +87,13 @@ namespace App2
             string msg = wc.DownloadString(url);
 
             // Debug:
-            Toast.MakeText(ApplicationContext, url, ToastLength.Long).Show();
+            //Toast.MakeText(ApplicationContext, url, ToastLength.Long).Show();
 
             // Decrypt message by using pad from padbook
             // If no pad exists, returns empty string
             Padbook pb = pm.GetPadbookForUsername(contactName);
-            string pad = pb?.GetNextPad();
+            string pad = pb.GetNextPad();
+
             string decryptedMsg = "";
             if (pad != null && pad.Length > 0)
             {
