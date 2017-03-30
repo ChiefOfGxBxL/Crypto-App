@@ -132,8 +132,14 @@ namespace App2
         {
             IParcelable[] rawMsg = intent.GetParcelableArrayExtra(NfcAdapter.ExtraNdefMessages);
             NdefMessage msg = (NdefMessage)rawMsg[0];
-            text.Text = (Encoding.UTF8.GetString(msg.GetRecords()[0].GetPayload()));
-
+            string datagram = Encoding.UTF8.GetString(msg.GetRecords()[0].GetPayload());
+            contactName = datagram.Split(',')[0];
+            keys = datagram.Split(',')[1].Split('#'); //keys are seperated with a hash mark
+            if (pm == null){
+                pm = new PadManager(GetExternalFilesDir(null).ToString());
+            }
+            Padbook friendBook = pm.GetPadbookForUsername(contactName);
+            friendBook.AppendPads(keys);
         }
         //NFC EVENTS
         public NdefMessage CreateNdefMessage(NfcEvent evt)
