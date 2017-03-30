@@ -30,7 +30,7 @@ namespace App2
                 }
 
                 StreamReader sr = new StreamReader(metxtFileLoc);
-                string username = sr.ReadToEnd();
+                Username = sr.ReadToEnd();
                 sr.Close();
             }
         }

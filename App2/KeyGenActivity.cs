@@ -12,8 +12,7 @@ using System.Text;
 
 namespace App2
 {
-    [Activity(Label = "KeyGenActivity", 
-     LaunchMode = Android.Content.PM.LaunchMode.SingleTop),
+    [Activity(Label = "KeyGenActivity", LaunchMode = Android.Content.PM.LaunchMode.SingleTop),
      IntentFilter(new[] { "android.nfc.action.NDEF_DISCOVERED" },
      Categories = new[] { "android.intent.category.DEFAULT" },
      DataMimeType = "padbook/nfc")]
@@ -70,6 +69,7 @@ namespace App2
                 text.Text = "Pad manager is null";
                 // Get the contact name passed in through the intent when ViewContactActivity launches this intent
             contactName = Intent.GetStringExtra("contactName"); // stored in key "contactName"
+            Identity.LoadUsername(GetExternalFilesDir(null).ToString());
             myName = Identity.Username;
             text.Text = contactName;
 
@@ -112,15 +112,15 @@ namespace App2
         protected override void OnResume()
         {
             base.OnResume();
+            if (NfcAdapter.ActionNdefDiscovered == Intent.Action)
+            {
+                ProcessIntent(Intent);
+            }
             if (progBar.Progress < 100 && _sensorManager == null)
                 registerSensors(); //reset sensors on resume
             if (pm == null)
             {
                 pm = new PadManager(GetExternalFilesDir(null).ToString());
-            }
-            if (NfcAdapter.ActionNdefDiscovered == Intent.Action)
-            {
-                ProcessIntent(Intent);
             }
         }
         //NEW INTENT STUFF FOR NFC
@@ -143,6 +143,11 @@ namespace App2
         //NFC EVENTS
         public NdefMessage CreateNdefMessage(NfcEvent evt)
         {
+            if (myName == null)
+            {
+                Identity.LoadUsername(GetExternalFilesDir(null).ToString());
+                myName = Identity.Username;
+            }
             string datagram = myName + ",";
             foreach (string e in keys)
             {
