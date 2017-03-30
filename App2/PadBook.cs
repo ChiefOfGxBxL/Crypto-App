@@ -14,9 +14,9 @@ namespace App2
         public Padbook(string fullTxtPath)
         {
             pads = new List<string>();
-
+            padFilePath = fullTxtPath;
             // Read all pads into memory
-            sr = new StreamReader(fullTxtPath);
+            sr = new StreamReader(padFilePath);
             while (sr.Peek() > 0)
             {
                 pads.Add(sr.ReadLine());

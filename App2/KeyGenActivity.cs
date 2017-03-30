@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 using Android.App;
 using Android.Content;
@@ -7,7 +6,6 @@ using Android.OS;
 using Android.Runtime;
 using Android.Widget;
 using Android.Hardware;
-using System.IO;
 using System.Threading;
 using Android.Nfc;
 using System.Text;
@@ -33,9 +31,9 @@ namespace App2
         int oldStatus = 0;
         bool recording;
         string contactName; // which contact we are generating the pad for
-        string myName;
+        string myName; //your username for sending over nfc
 
-        const Int32 MESSAGE_SENT = 1;
+        const Int32 MESSAGE_SENT = 1; //basically a #define
         public NfcAdapter _nfcAdapter;
         private const string Mime = "padbook/nfc";
         private readonly nfcHandler _Handler;
@@ -53,10 +51,10 @@ namespace App2
             progBar = FindViewById<ProgressBar>(Resource.Id.progBar);
             finishedGen = FindViewById<Button>(Resource.Id.button1);
             startGen = FindViewById<Button>(Resource.Id.button2);
-            SetProgressBarIndeterminate(false);
 
             pm = new PadManager(GetExternalFilesDir(null).ToString());
-            
+
+            SetProgressBarIndeterminate(false);
             progBar.Progress = 0;
             progBar.Max = 100;
             finishedGen.Enabled = false;
@@ -116,7 +114,10 @@ namespace App2
             base.OnResume();
             if (progBar.Progress < 100 && _sensorManager == null)
                 registerSensors(); //reset sensors on resume
-
+            if (pm == null)
+            {
+                pm = new PadManager(GetExternalFilesDir(null).ToString());
+            }
             if (NfcAdapter.ActionNdefDiscovered == Intent.Action)
             {
                 ProcessIntent(Intent);
@@ -135,9 +136,7 @@ namespace App2
             string datagram = Encoding.UTF8.GetString(msg.GetRecords()[0].GetPayload());
             contactName = datagram.Split(',')[0];
             keys = datagram.Split(',')[1].Split('#'); //keys are seperated with a hash mark
-            if (pm == null){
-                pm = new PadManager(GetExternalFilesDir(null).ToString());
-            }
+            
             Padbook friendBook = pm.GetPadbookForUsername(contactName);
             friendBook.AppendPads(keys);
         }
