@@ -44,8 +44,8 @@ namespace App2
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.KeyGen);
-            
-            
+
+
             text = FindViewById<TextView>(Resource.Id.textView1);
             progBar = FindViewById<ProgressBar>(Resource.Id.progBar);
             finishedGen = FindViewById<Button>(Resource.Id.button1);
@@ -67,7 +67,8 @@ namespace App2
             }
             if (pm == null)
                 text.Text = "Pad manager is null";
-                // Get the contact name passed in through the intent when ViewContactActivity launches this intent
+
+            // Get the contact name passed in through the intent when ViewContactActivity launches this intent
             contactName = Intent.GetStringExtra("contactName"); // stored in key "contactName"
             Identity.LoadUsername(GetExternalFilesDir(null).ToString());
             myName = Identity.Username;
@@ -82,7 +83,7 @@ namespace App2
             {
                 text.Text = "Start Shaking";
             });
-            
+
             Thread.Sleep(1000);
             recording = true;
             registerSensors();
@@ -95,7 +96,7 @@ namespace App2
             keys = new string[] { EntropyManager.GetBlockOfEntropyBytes() };
             key = EntropyManager.GetBlockOfEntropyBytes();
             friendBook.AppendPads(keys);
-            
+
             _nfcAdapter.SetNdefPushMessageCallback(this, this);
             _nfcAdapter.SetOnNdefPushCompleteCallback(this, this);
             text.Text = "Move Your Phone Near Your Friend's";
@@ -108,7 +109,7 @@ namespace App2
             if (progBar.Progress < 100)
                 _sensorManager.UnregisterListener(this); // unregisters all sensors
         }
-        
+
         protected override void OnResume()
         {
             base.OnResume();
@@ -136,7 +137,7 @@ namespace App2
             string datagram = Encoding.UTF8.GetString(msg.GetRecords()[0].GetPayload());
             contactName = datagram.Split(',')[0];
             keys = datagram.Split(',')[1].Split('#'); //keys are seperated with a hash mark
-            
+
             Padbook friendBook = pm.GetPadbookForUsername(contactName);
             friendBook.AppendPads(keys);
         }
@@ -192,7 +193,7 @@ namespace App2
                     break;
             }
         }
-        
+
 
         //SENSOR LISTENER STUFF
         public void OnAccuracyChanged(Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
@@ -204,12 +205,12 @@ namespace App2
         {
             if (!recording) return;
             EntropyManager.FeedData(e.Sensor.Type, e.Values);
-            
-            progStatus = (EntropyManager.GetSbSize() * 100 )/ EntropyManager.GetTotalSbSize();
+
+            progStatus = (EntropyManager.GetSbSize() * 100) / EntropyManager.GetTotalSbSize();
 
             RunOnUiThread(() =>
             {
-                progBar.IncrementProgressBy(progStatus-oldStatus);
+                progBar.IncrementProgressBy(progStatus - oldStatus);
             });
             oldStatus = progStatus;
 
