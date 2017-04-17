@@ -16,8 +16,9 @@ namespace App2
 {
     public static class EntropyManager
     {
-        public const int BlockLength = 1024; // Size in bytes for a single block
-        public const int BlocksToStore = 4; // At any time, keep up to 4*1024 = 4kb of random bytes stored in the SB
+        public const int MessageSize = 160; // A message may be up to 160 bytes (excludes meta information)
+        public const int BlockLength = MessageSize * 6; // A block may hold up to 6 messages worth of bytes
+        public const int BlocksToStore = 4; // At any time, keep up to X blocks stored in the SB (useful for repeat calls)
         private const int TotalBufferSize = BlockLength * BlocksToStore;
 
         private static StringBuilder sb = new StringBuilder(TotalBufferSize);
