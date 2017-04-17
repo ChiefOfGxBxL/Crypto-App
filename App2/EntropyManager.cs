@@ -57,7 +57,7 @@ namespace App2
             if (sb.Length >= BlockLength)
             {
                 string block = sb.ToString().Substring(0, BlockLength).Trim('.');
-                sb.Remove(0, 1024); // remove the block that was just taken
+                sb.Remove(0, BlockLength); // remove the block that was just taken
 
                 return block;
             }
