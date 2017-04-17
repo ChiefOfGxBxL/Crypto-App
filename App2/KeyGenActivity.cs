@@ -9,6 +9,8 @@ using Android.Hardware;
 using System.Threading;
 using Android.Nfc;
 using System.Text;
+using System.IO.Compression;
+using System.IO;
 
 namespace App2
 {
@@ -93,10 +95,34 @@ namespace App2
         {
             text.Text = contactName;
             Padbook friendBook = pm.GetPadbookForUsername(contactName);
-            keys = new string[] { EntropyManager.GetBlockOfEntropyBytes() };
+
+            // The `keys` array is used for pads and nfc exchange
+            // But GetBlockOfEntropyBytes destroys the data from the string builder,
+            // and we need a copy of it for calculating compression... so keep `key` and `keys`
             key = EntropyManager.GetBlockOfEntropyBytes();
+            keys = new string[] { key };
+
             friendBook.AppendPads(keys);
 
+            // Compute quality of entropy by running compression
+            string inputStr = key;
+            byte[] compressed; // output byte array after compression
+
+            using (var outStream = new MemoryStream())
+            {
+                using (var gzipStream = new GZipStream(outStream, CompressionMode.Compress))
+                using (var inStream = new MemoryStream(Encoding.UTF8.GetBytes(inputStr)))
+                    inStream.CopyTo(gzipStream);
+
+                compressed = outStream.ToArray();
+            }
+
+            // Calculate compression ratio - use floats because % will be between 0-1, but we want the decimal accuracy
+            float compressionRatio = ((float)inputStr.Length - (float)compressed.Length) / (float)inputStr.Length;
+            // TODO: display compression ratio to user to indicate entropy quality
+            // NOTE: ^ lower compression = better! :: "Compression ratio: " + compressionRatio*100 + "%"
+
+            // NFC exchange
             _nfcAdapter.SetNdefPushMessageCallback(this, this);
             _nfcAdapter.SetOnNdefPushCompleteCallback(this, this);
             text.Text = "Move Your Phone Near Your Friend's";
