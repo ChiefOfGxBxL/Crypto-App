@@ -39,7 +39,7 @@ namespace App2
         private const string Mime = "padbook/nfc";
         private readonly nfcHandler _Handler;
         private string key;
-        private string[] keys;
+        private System.Collections.Generic.List<string> keys;
         private PadManager pm;
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -47,13 +47,14 @@ namespace App2
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.KeyGen);
 
-
             text = FindViewById<TextView>(Resource.Id.textView1);
             progBar = FindViewById<ProgressBar>(Resource.Id.progBar);
             finishedGen = FindViewById<Button>(Resource.Id.button1);
             startGen = FindViewById<Button>(Resource.Id.button2);
 
             pm = new PadManager(GetExternalFilesDir(null).ToString());
+            keys = new System.Collections.Generic.List<string>();
+
 
             SetProgressBarIndeterminate(false);
             progBar.Progress = 0;
@@ -75,8 +76,6 @@ namespace App2
             Identity.LoadUsername(GetExternalFilesDir(null).ToString());
             myName = Identity.Username;
             text.Text = contactName;
-
-            Toast.MakeText(ApplicationContext, contactName, ToastLength.Long).Show();
         }
 
         private void StartGen_Click(object sender, EventArgs e)
@@ -94,15 +93,17 @@ namespace App2
         private void StartNfc_Click(object sender, EventArgs e)
         {
             text.Text = contactName;
-            Padbook friendBook = pm.GetPadbookForUsername(contactName);
+
 
             // The `keys` array is used for pads and nfc exchange
             // But GetBlockOfEntropyBytes destroys the data from the string builder,
             // and we need a copy of it for calculating compression... so keep `key` and `keys`
             key = EntropyManager.GetBlockOfEntropyBytes();
-            keys = new string[] { key };
-
-            friendBook.AppendPads(keys);
+            while (key != "__NO_ENTROPY__")
+            {
+                keys.Add(key);
+                key = EntropyManager.GetBlockOfEntropyBytes();   
+            }
 
             // Compute quality of entropy by running compression
             string inputStr = key;
@@ -121,7 +122,7 @@ namespace App2
             float compressionRatio = ((float)inputStr.Length - (float)compressed.Length) / (float)inputStr.Length;
             // TODO: display compression ratio to user to indicate entropy quality
             // NOTE: ^ lower compression = better! :: "Compression ratio: " + compressionRatio*100 + "%"
-
+            Toast.MakeText(ApplicationContext, "Compression ratio: " + compressionRatio*100 + "%", ToastLength.Long).Show();
             // NFC exchange
             _nfcAdapter.SetNdefPushMessageCallback(this, this);
             _nfcAdapter.SetOnNdefPushCompleteCallback(this, this);
@@ -139,6 +140,9 @@ namespace App2
         protected override void OnResume()
         {
             base.OnResume();
+
+            if (keys == null) keys = new System.Collections.Generic.List<string>();
+
             if (NfcAdapter.ActionNdefDiscovered == Intent.Action)
             {
                 ProcessIntent(Intent);
@@ -162,10 +166,9 @@ namespace App2
             NdefMessage msg = (NdefMessage)rawMsg[0];
             string datagram = Encoding.UTF8.GetString(msg.GetRecords()[0].GetPayload());
             contactName = datagram.Split(',')[0];
-            keys = datagram.Split(',')[1].Split('#'); //keys are seperated with a hash mark
 
             Padbook friendBook = pm.GetPadbookForUsername(contactName);
-            friendBook.AppendPads(keys);
+            friendBook.AppendPads(datagram.Split(',')[1].Split('#')); // keys are seperated with a hash
         }
         //NFC EVENTS
         public NdefMessage CreateNdefMessage(NfcEvent evt)
@@ -190,6 +193,8 @@ namespace App2
 
         public void OnNdefPushComplete(NfcEvent evt)
         {
+            Padbook friendBook = pm.GetPadbookForUsername(contactName);
+            friendBook.AppendPads(keys.ToArray());
             _Handler.ObtainMessage(MESSAGE_SENT).SendToTarget();
 
         }
@@ -243,6 +248,7 @@ namespace App2
             if (progBar.Progress >= 100)
             {
                 finishedGen.Enabled = true;
+                text.Text = "Finished generating a set of keys";
                 _sensorManager.UnregisterListener(this);
             }
         }

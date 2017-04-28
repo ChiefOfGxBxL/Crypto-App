@@ -36,6 +36,8 @@ namespace App2
             _newContactTxt = FindViewById<EditText>(Resource.Id.editText1);
             _newContactBtn = FindViewById<Button>(Resource.Id.button1);
 
+            this.Window.SetSoftInputMode(Android.Views.SoftInput.AdjustPan);
+
             _newContactBtn.Click += _newContactBtn_Click;
 
             // Create a new contact
@@ -56,7 +58,7 @@ namespace App2
             // Add to contacts list
             cb.AddContact(_newContactTxt.Text); // Add to contact book by creating directory and empty pad.txt file
 
-            items.Add(_newContactTxt.Text);
+            adapter.Add(_newContactTxt.Text);
             adapter.NotifyDataSetChanged(); // refresh the listview
 
             // Clear textbox

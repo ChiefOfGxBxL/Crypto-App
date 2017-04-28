@@ -40,7 +40,10 @@ namespace App2
             {
                 // The path includes some other stuff at the beginning, and we just want to grab
                 // the last folder name, which is named after the contact
-                cleanDirs.Add(d.ToString());
+                string[] path = d.Split('/');
+                string name = path[path.Length-1];
+                
+                cleanDirs.Add(name);
             }
 
             return cleanDirs;

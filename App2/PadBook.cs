@@ -48,9 +48,15 @@ namespace App2
             return nextPad;
         }
 
+
         public StreamWriter OpenPadStreamWriter()
         {
             return new StreamWriter(new FileStream(padFilePath, FileMode.Append));
+        }
+
+        public long BytesLeft()
+        {
+            return new System.IO.FileInfo(padFilePath).Length;
         }
 
         private void SaveMemPadsToFile()

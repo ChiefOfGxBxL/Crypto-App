@@ -10,6 +10,8 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using System.Net;
+using System.Security.Cryptography;
+using System.IO;
 
 namespace App2
 {
@@ -53,7 +55,7 @@ namespace App2
 
             // Initialize pad manager
             pm = new PadManager(GetExternalFilesDir(null).ToString());
-            Toast.MakeText(ApplicationContext, pm._contactsDir, ToastLength.Long).Show();
+            Toast.MakeText(ApplicationContext, contactName, ToastLength.Long).Show();
         }
 
         private void SendMessageBtn_Click(object sender, EventArgs e)
@@ -92,16 +94,58 @@ namespace App2
             // Decrypt message by using pad from padbook
             // If no pad exists, returns empty string
             Padbook pb = pm.GetPadbookForUsername(contactName);
-            string pad = pb.GetNextPad();
-
+            long pbSize = pb.BytesLeft();
+            AesManaged aes = new AesManaged();
+            KeySizes[] ks = aes.LegalKeySizes;
             string decryptedMsg = "";
-            if (pad != null && pad.Length > 0)
-            {
-                decryptedMsg = Encoding.UTF8.GetString(Crypto.XorStrings(msg, pad)); // Decrypt message using pad
+            if (pbSize >= (aes.LegalKeySizes[0].MaxSize + aes.LegalBlockSizes[0].MaxSize/8) * 2)
+            { 
+                string pad = pb.GetNextPad();
+            
+
+                if (pad != null && pad.Length > 0)
+                    decryptedMsg = Encoding.UTF8.GetString(Crypto.XorStrings(msg, pad)); // Decrypt message using pad
             }
-            else
+            else // use AES
             {
-                Toast.MakeText(ApplicationContext, "No pad exists to decrypt this message", ToastLength.Long).Show();
+                List<byte> key = new List<byte>();
+                List<byte> IV = new List<byte>();
+                List<string> pads = new List<string>();
+                while (key.Count * sizeof(byte) < 128)
+                {
+                    pads.Add(pb.GetNextPad());
+                    byte[] f = Encoding.UTF8.GetBytes(pads.Last());
+                    foreach (byte b in f)
+                    {
+                        key.Add(b);
+                    }
+                }
+                while (IV.Count * sizeof(byte) < 128 / 8)
+                {
+                    pads.Add(pb.GetNextPad());
+                    byte[] f = Encoding.UTF8.GetBytes(pads.Last());
+                    foreach (byte b in f)
+                    {
+                        IV.Add(b);
+                    }
+                }
+                //resave the pads so AES can be used again
+                pb.AppendPads(pads.ToArray());
+                aes.Key = key.ToArray();
+                aes.IV = IV.ToArray();
+                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+                using (MemoryStream msDecrypt = new MemoryStream(Encoding.UTF8.GetBytes(msg)))
+                {
+                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                        {
+                            // Read the decrypted bytes from the decrypting stream
+                            // and place them in a string.
+                            decryptedMsg = srDecrypt.ReadToEnd();
+                        }
+                    }
+                }
             }
 
             return decryptedMsg;
@@ -118,17 +162,59 @@ namespace App2
 
             // Encrypt message using pad
             Padbook pb = pm.GetPadbookForUsername(contactName);
-            string pad = pb.GetNextPad();
-            string encryptedMsg = msg;
-            if (pad != null && pad.Length > 0)
+            long pbSize = pb.BytesLeft();
+            AesManaged aes = new AesManaged();
+            KeySizes[] ks = aes.LegalKeySizes;
+            string encryptedMsg;
+            if (pbSize >= (aes.LegalKeySizes[0].MaxSize + aes.LegalBlockSizes[0].MaxSize / 8) * 2)
             {
+                Toast.MakeText(ApplicationContext, "Using Pads", ToastLength.Long).Show();
+                string pad = pb.GetNextPad();
+                encryptedMsg = msg;
                 encryptedMsg = Encoding.UTF8.GetString(Crypto.XorStrings(msg, pad));
             }
-            else
+            else // Use AES
             {
-                // No pad exists to encrpyt message, so bail out
-                Toast.MakeText(ApplicationContext, "No pad exists to encrypt this message", ToastLength.Long).Show();
-                return false;
+                Toast.MakeText(ApplicationContext, "Using AES", ToastLength.Long).Show();
+                List<byte> key = new List<byte>();
+                List<byte> IV = new List<byte>();
+                List<string> pads = new List<string>();
+                while (key.Count * sizeof(byte) < 128)
+                {
+                    pads.Add(pb.GetNextPad());
+                    byte[] f = Encoding.UTF8.GetBytes(pads.Last());
+                    foreach (byte b in f)
+                    {
+                        key.Add(b);
+                    }
+                }
+                while (IV.Count * sizeof(byte) < 128 / 8)
+                {
+                    pads.Add(pb.GetNextPad());
+                    byte[] f = Encoding.UTF8.GetBytes(pads.Last());
+                    foreach (byte b in f)
+                    {
+                        IV.Add(b);
+                    }
+                }
+                //resave the pads so AES can be used again
+                pb.AppendPads(pads.ToArray());
+                aes.Key = key.ToArray();
+                aes.IV = IV.ToArray();
+                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+                using (MemoryStream msEncrypt = new MemoryStream())
+                {
+                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                        {
+                            // Read the decrypted bytes from the decrypting stream
+                            // and place them in a string.
+                            swEncrypt.Write(msg);
+                        }
+                        encryptedMsg = Encoding.UTF8.GetString(msEncrypt.ToArray());
+                    }
+                }
             }
 
             string url = string.Format(
